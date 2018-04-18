@@ -3080,6 +3080,18 @@ var ts;
     (function (pxtc) {
         var decompiler;
         (function (decompiler) {
+            var DecompileParamKeys;
+            (function (DecompileParamKeys) {
+                // Field editor should decompile literal expressions in addition to
+                // call expressions
+                DecompileParamKeys["DecompileLiterals"] = "decompileLiterals";
+                // Tagged template name expected by a field editor for a parameter
+                // (i.e. for tagged templates with blockIdentity set)
+                DecompileParamKeys["TaggedTemplate"] = "taggedTemplate";
+                // Allow for arguments for which fixed instances exist to be decompiled
+                // even if the expression is not a direct reference to a fixed instance
+                DecompileParamKeys["DecompileIndirectFixedInstances"] = "decompileIndirectFixedInstances";
+            })(DecompileParamKeys = decompiler.DecompileParamKeys || (decompiler.DecompileParamKeys = {}));
             decompiler.FILE_TOO_LARGE_CODE = 9266;
             var SK = ts.SyntaxKind;
             /**
@@ -4188,7 +4200,7 @@ var ts;
                                         }
                                         else {
                                             var sym = blocksInfo.blocksById[info.attrs.blockId];
-                                            var paramDesc_1 = sym.parameters[i];
+                                            var paramDesc_1 = sym.parameters[comp.thisParameter ? i - 1 : i];
                                             arrow.parameters.forEach(function (parameter, i) {
                                                 var arg = paramDesc_1.handlerParameters[i];
                                                 addField(getField("HANDLER_" + arg.name, parameter.name.text));
@@ -4249,7 +4261,7 @@ var ts;
                                         }
                                     }
                                 }
-                                else if (e.kind === SK.TaggedTemplateExpression && param.fieldOptions && param.fieldOptions["taggedTemplate"]) {
+                                else if (e.kind === SK.TaggedTemplateExpression && param.fieldOptions && param.fieldOptions[DecompileParamKeys.TaggedTemplate]) {
                                     addField(getField(vName, pxtc.Util.htmlEscape(e.getText())));
                                     return;
                                 }
@@ -4277,7 +4289,7 @@ var ts;
                     return undefined;
                 }
                 function decompileLiterals(param) {
-                    return param && param.fieldOptions && param.fieldOptions["decompileLiterals"];
+                    return param && param.fieldOptions && param.fieldOptions[DecompileParamKeys.DecompileLiterals];
                 }
                 // function openCallExpressionBlockWithRestParameter(call: ts.CallExpression, info: pxtc.CallInfo) {
                 //     openBlockTag(info.attrs.blockId);
@@ -4836,13 +4848,13 @@ var ts;
                             return pxtc.Util.lf("Enum arguments may only be literal property access expressions");
                         }
                         else if (isLiteralNode(e) && (param.fieldEditor || param.shadowBlockId)) {
-                            var dl = !!(param.fieldOptions && param.fieldOptions["decompileLiterals"]);
+                            var dl = !!(param.fieldOptions && param.fieldOptions[DecompileParamKeys.DecompileLiterals]);
                             if (!dl && param.shadowBlockId) {
                                 var shadowInfo = env.blocks.blocksById[param.shadowBlockId];
                                 if (shadowInfo && shadowInfo.parameters && shadowInfo.parameters.length) {
                                     var name_3 = shadowInfo.parameters[0].name;
                                     if (shadowInfo.attributes.paramFieldEditorOptions && shadowInfo.attributes.paramFieldEditorOptions[name_3]) {
-                                        dl = !!(shadowInfo.attributes.paramFieldEditorOptions[name_3]["decompileLiterals"]);
+                                        dl = !!(shadowInfo.attributes.paramFieldEditorOptions[name_3][DecompileParamKeys.DecompileLiterals]);
                                     }
                                     else {
                                         dl = true;
@@ -4857,7 +4869,7 @@ var ts;
                             }
                         }
                         else if (e.kind === SK.TaggedTemplateExpression && param.fieldEditor) {
-                            var tagName = param.fieldOptions && param.fieldOptions["taggedTemplate"];
+                            var tagName = param.fieldOptions && param.fieldOptions[DecompileParamKeys.TaggedTemplate];
                             if (!tagName) {
                                 return pxtc.Util.lf("Tagged templates only supported in custom fields with param.fieldOptions.taggedTemplate set");
                             }
@@ -4896,6 +4908,18 @@ var ts;
                         else if (env.blocks.apis.byQName[paramInfo.type]) {
                             var typeInfo = env.blocks.apis.byQName[paramInfo.type];
                             if (typeInfo.attributes.fixedInstances) {
+                                if (decompileFixedInst(param)) {
+                                    return undefined;
+                                }
+                                else if (param.shadowBlockId) {
+                                    var shadowSym = env.blocks.blocksById[param.shadowBlockId];
+                                    if (shadowSym) {
+                                        var shadowInfo = pxt.blocks.compileInfo(shadowSym);
+                                        if (shadowInfo.parameters && decompileFixedInst(shadowInfo.parameters[0])) {
+                                            return undefined;
+                                        }
+                                    }
+                                }
                                 var callInfo = e.callInfo;
                                 if (callInfo && callInfo.attrs.fixedInstance) {
                                     return undefined;
@@ -5233,6 +5257,9 @@ var ts;
                     default:
                         return false;
                 }
+            }
+            function decompileFixedInst(param) {
+                return param && param.fieldOptions && param.fieldOptions[DecompileParamKeys.DecompileIndirectFixedInstances];
             }
             function isSupportedMathFunction(op) {
                 return pxt.blocks.MATH_FUNCTIONS.unary.indexOf(op) !== -1 || pxt.blocks.MATH_FUNCTIONS.binary.indexOf(op) !== -1;
@@ -12663,11 +12690,9 @@ var ts;
             for (var i = 0; i < w; ++i) {
                 for (var j = 0; j < h; ++j)
                     pushBits(getPix(i, j));
-                if (bpp == 1) {
-                    while (shift != 0)
-                        pushBits(0);
-                }
-                else {
+                while (shift != 0)
+                    pushBits(0);
+                if (bpp > 1) {
                     while (ptr & 3)
                         pushBits(0);
                 }

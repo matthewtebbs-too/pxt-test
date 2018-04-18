@@ -54,6 +54,36 @@ var pxsim;
 })(pxsim || (pxsim = {}));
 var pxsim;
 (function (pxsim) {
+    var ANumber = (function () {
+        function ANumber(a) {
+            this.a = a;
+        }
+        return ANumber;
+    }());
+    pxsim.ANumber = ANumber;
+    var BNumberImpl = (function () {
+        function BNumberImpl(b) {
+            this.b = b;
+        }
+        return BNumberImpl;
+    }());
+    pxsim.BNumberImpl = BNumberImpl;
+})(pxsim || (pxsim = {}));
+(function (pxsim) {
+    var test;
+    (function (test) {
+        function createANumber() {
+            return new pxsim.ANumber(1234);
+        }
+        test.createANumber = createANumber;
+        function createBNumber() {
+            return new pxsim.BNumberImpl(5678);
+        }
+        test.createBNumber = createBNumber;
+    })(test = pxsim.test || (pxsim.test = {}));
+})(pxsim || (pxsim = {}));
+var pxsim;
+(function (pxsim) {
     var TestBoard = (function (_super) {
         __extends(TestBoard, _super);
         function TestBoard() {

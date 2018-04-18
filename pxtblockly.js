@@ -10157,23 +10157,6 @@ var pxtblockly;
                 this.setText(value);
                 Blockly.DropDownDiv.hide();
             };
-            /**
-             * Callback for when the drop-down is hidden.
-             */
-            _this.onHide_ = function () {
-                Blockly.DropDownDiv.content_.removeAttribute('role');
-                Blockly.DropDownDiv.content_.removeAttribute('aria-haspopup');
-                Blockly.DropDownDiv.content_.removeAttribute('aria-activedescendant');
-                Blockly.DropDownDiv.getContentDiv().style.width = '';
-                if (this.sourceBlock_) {
-                    if (this.sourceBlock_.isShadow()) {
-                        this.sourceBlock_.setColour(this.savedPrimary_, this.sourceBlock_.getColourSecondary(), this.sourceBlock_.getColourTertiary());
-                    }
-                    else if (this.box_) {
-                        this.box_.setAttribute('fill', this.sourceBlock_.getColour());
-                    }
-                }
-            };
             _this.columns_ = parseInt(options.columns);
             _this.maxRows_ = parseInt(options.maxRows) || 0;
             _this.width_ = parseInt(options.width) || 300;
@@ -10277,6 +10260,24 @@ var pxtblockly;
                 this.box_.setAttribute('fill', this.sourceBlock_.getColourTertiary());
             }
         };
+        /**
+         * Callback for when the drop-down is hidden.
+         */
+        FieldImageDropdown.prototype.onHide_ = function () {
+            Blockly.DropDownDiv.content_.removeAttribute('role');
+            Blockly.DropDownDiv.content_.removeAttribute('aria-haspopup');
+            Blockly.DropDownDiv.content_.removeAttribute('aria-activedescendant');
+            Blockly.DropDownDiv.getContentDiv().style.width = '';
+            if (this.sourceBlock_) {
+                if (this.sourceBlock_.isShadow()) {
+                    this.sourceBlock_.setColour(this.savedPrimary_, this.sourceBlock_.getColourSecondary(), this.sourceBlock_.getColourTertiary());
+                }
+                else if (this.box_) {
+                    this.box_.setAttribute('fill', this.sourceBlock_.getColour());
+                }
+            }
+        };
+        ;
         /**
          * Sets the text in this field.  Trigger a rerender of the source block.
          * @param {?string} text New text.

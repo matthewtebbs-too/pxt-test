@@ -17282,6 +17282,9 @@ var pxsim;
             if (_vca)
                 _vca.gain.value = 0;
             _frequency = 0;
+            if (audio) {
+                audio.pause();
+            }
         }
         AudioContextManager.stop = stop;
         function frequency() {
@@ -17328,6 +17331,7 @@ var pxsim;
                 res += String.fromCharCode(input[i]);
             return res;
         }
+        var audio;
         function playBufferAsync(buf) {
             if (!buf)
                 return Promise.resolve();
@@ -17338,7 +17342,7 @@ var pxsim;
                     resolve = undefined;
                 }
                 var url = "data:audio/wav;base64," + window.btoa(uint8ArrayToString(buf.data));
-                var audio = new Audio(url);
+                audio = new Audio(url);
                 if (_mute)
                     audio.volume = 0;
                 audio.onended = function () { return res(); };

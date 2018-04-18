@@ -16,6 +16,7 @@ CACHE:
 /pxt-Test/pxtsim.js
 /pxt-Test/pxtembed.js
 /pxt-Test/pxtworker.js
+/pxt-Test/pxtweb.js
 /pxt-Test/blockly.css
 /pxt-Test/semantic.css
 /pxt-Test/rtlsemantic.css
@@ -54,7 +55,7 @@ https://az416426.vo.msecnd.net/scripts/a/ai.0.js
 /pxt-Test/worker.js
 /pxt-Test/monacoworker.js
 
-# ver Wed Apr 18 2018 10:51:40 GMT-0700 (PDT)
+# ver Wed Apr 18 2018 11:31:23 GMT-0700 (PDT)
 
 # target
 
