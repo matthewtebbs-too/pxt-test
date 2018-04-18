@@ -1,0 +1,65 @@
+CACHE MANIFEST
+
+CACHE:
+/pxt-Test/semantic.js
+/pxt-Test/main.js
+/pxt-Test/pxtapp.js
+/pxt-Test/typescript.js
+/pxt-Test/marked/marked.min.js
+/pxt-Test/highlight.js/highlight.pack.js
+/pxt-Test/jquery.js
+/pxt-Test/pxtlib.js
+/pxt-Test/pxtcompiler.js
+/pxt-Test/pxtblockly.js
+/pxt-Test/pxtwinrt.js
+/pxt-Test/pxteditor.js
+/pxt-Test/pxtsim.js
+/pxt-Test/pxtembed.js
+/pxt-Test/pxtworker.js
+/pxt-Test/blockly.css
+/pxt-Test/semantic.css
+/pxt-Test/rtlsemantic.css
+
+
+/pxt-Test/editor.js
+
+
+# blockly
+/pxt-Test/blockly/media/sprites.png
+/pxt-Test/blockly/media/click.mp3
+/pxt-Test/blockly/media/disconnect.wav
+/pxt-Test/blockly/media/delete.mp3
+
+# monaco; keep in sync with webapp/public/index.html
+/pxt-Test/vs/loader.js
+/pxt-Test/vs/base/worker/workerMain.js
+/pxt-Test/vs/basic-languages/src/bat.js
+/pxt-Test/vs/basic-languages/src/cpp.js
+/pxt-Test/vs/editor/editor.main.css
+/pxt-Test/vs/editor/editor.main.js
+/pxt-Test/vs/editor/editor.main.nls.js
+/pxt-Test/vs/language/json/jsonMode.js
+/pxt-Test/vs/language/json/jsonWorker.js
+/pxt-Test/vs/language/typescript/lib/typescriptServices.js
+/pxt-Test/vs/language/typescript/src/mode.js
+/pxt-Test/vs/language/typescript/src/worker.js
+
+# charts
+/pxt-Test/smoothie/smoothie_compressed.js
+/pxt-Test/images/Bars_black.gif
+
+# ai
+https://az416426.vo.msecnd.net/scripts/a/ai.0.js
+
+/pxt-Test/worker.js
+/pxt-Test/monacoworker.js
+
+# ver Wed Apr 18 2018 10:51:40 GMT-0700 (PDT)
+
+# target
+
+
+/pxt-Test/target.js
+  
+NETWORK:
+*
