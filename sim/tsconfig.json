@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.base.json",
+
+  "compilerOptions": {
+    "out": "../built/sim.js"
+  },
+
+  "include": [
+    "../localtypings/test.enums.d.ts",
+    "../localtypings/test.api.d.ts",
+
+    "./**/*"
+  ]
+}

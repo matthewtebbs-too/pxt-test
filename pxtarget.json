@@ -1,0 +1,68 @@
+{
+  "id": "test",
+  "name": "ImpTestetus",
+  "title": "Microsoft MakeCode for Testing PXT",
+  "description": "A Blocks / JavaScript code editor for testing PXT powered by Microsoft MakeCode.",
+  "corepkg": "core",
+  "cloud": {
+    "workspace": false,
+    "packages": true
+  },
+  "compile": {
+    "isNative": false
+  },
+  "bundleddirs": [
+    "libs/core"
+  ],
+  "serial": {
+    "useEditor": true
+  },
+  "runtime": {
+    "functionBlocks": true,
+    "listsBlocks": true,
+    "logicBlocks": true,
+    "loopsBlocks": true,
+    "mathBlocks": true,
+    "textBlocks": true,
+    "variablesBlocks": true
+  },
+  "simulator": {
+    "autoRun": true
+  },
+  "appTheme": {
+    "boardName": "Test",
+    "logoUrl": "https://github.com/muddytummy/pxt-Test#readme",
+    "homeUrl": "https://muddytummy.github.io/pxt-Test/",
+    "betaUrl": "https://github.com/muddytummy/pxt-Test#readme",
+    "privacyUrl": "https://makecode.com/privacy",
+    "termsOfUseUrl": "https://makecode.com/termsofuse",
+    "docMenu": [
+      {
+        "name": "About",
+        "path": "/about"
+      },
+      {
+        "name": "Docs",
+        "path": "/docs"
+      }
+    ],
+    "coloredToolbox": true,
+    "monacoToolbox": true,
+    "invertedMenu": true,
+    "showHomeScreen": true,
+    "blocklyOptions": {
+      "grid": {
+        "spacing": 20,
+        "length": 2,
+        "colour": "rgba(189, 195, 199, 0.20)",
+        "snap": true
+      }
+    },
+    "simAnimationEnter": "fly right in",
+    "simAnimationExit": "fly right out",
+    "extendEditor": true,
+    "monacoColors": {
+      "editor.background": "#ecf0f1"
+    }
+  }
+}

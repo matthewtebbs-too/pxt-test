@@ -1,0 +1,11 @@
+{
+  "name": "localtypings",
+  "description": "Typings for Test target for PXT",
+  "files": [
+    "test.enums.d.ts",
+    "test.console.d.ts",
+    "test.api.d.ts"
+  ],
+  "public": true,
+  "dependencies": {}
+}
