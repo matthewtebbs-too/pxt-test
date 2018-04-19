@@ -30,7 +30,7 @@
     "sim/public"
   ],
   "dependencies": {
-    "pxt-core": "3.10.6"
+    "pxt-core": "3.10.8"
   },
   "main": "built/pxtrequire.js",
   "typings": "built/pxtrequire.d.ts",

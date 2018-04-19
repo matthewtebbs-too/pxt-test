@@ -35,14 +35,14 @@ declare namespace logic {
 declare class ANumber {
     //% blockCombine
     //% shim=.a property
-    public a: number;
+    public readonly a: number;
 }
 
 //% blockNamespace=test
 declare interface BNumber {
     //% blockCombine
     //% shim=.b property
-    b: number;
+    readonly b: number;
 }
 
 //% color=270 weight=96 icon="\uf128"
