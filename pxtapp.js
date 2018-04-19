@@ -3920,13 +3920,7 @@ var pxt;
             });
         }
         function apiAsync(path, data) {
-            return pxt.U.requestAsync({
-                url: "/api/" + path,
-                headers: { "Authorization": pxt.Cloud.localToken },
-                method: data ? "POST" : "GET",
-                data: data || undefined,
-                allowHttpErrors: true
-            }).then(function (r) { return r.json; });
+            return pxt.Cloud.localRequestAsync(path, data).then(function (r) { return r.json; });
         }
         function storeWithLimitAsync(host, idxkey, newkey, newval, maxLen) {
             if (maxLen === void 0) { maxLen = 10; }
@@ -10509,6 +10503,16 @@ var pxt;
             }
         }
         Cloud.isLocalHost = isLocalHost;
+        function localRequestAsync(path, data) {
+            return pxt.U.requestAsync({
+                url: "/api/" + path,
+                headers: { "Authorization": Cloud.localToken },
+                method: data ? "POST" : "GET",
+                data: data || undefined,
+                allowHttpErrors: true
+            });
+        }
+        Cloud.localRequestAsync = localRequestAsync;
         function privateRequestAsync(options) {
             options.url = pxt.webConfig && pxt.webConfig.isStatic ? pxt.webConfig.relprefix + options.url : Cloud.apiRoot + options.url;
             options.allowGzipPost = true;
@@ -10548,12 +10552,7 @@ var pxt;
                 return Promise.resolve(undefined);
             var url = pxt.webConfig && pxt.webConfig.isStatic ? "targetconfig.json" : "config/" + pxt.appTarget.id + "/targetconfig";
             if (Cloud.isLocalHost())
-                return Util.requestAsync({
-                    url: "/api/" + url,
-                    headers: { "Authorization": Cloud.localToken },
-                    method: "GET",
-                    allowHttpErrors: true
-                }).then(function (resp) { return resp.json; });
+                return localRequestAsync(url).then(function (r) { return r.json; });
             else
                 return Cloud.privateGetAsync(url);
         }
@@ -10575,12 +10574,7 @@ var pxt;
                     url += "&live=1";
             }
             if (Cloud.isLocalHost() && !live)
-                return Util.requestAsync({
-                    url: "/api/" + url,
-                    headers: { "Authorization": Cloud.localToken },
-                    method: "GET",
-                    allowHttpErrors: true
-                }).then(function (resp) {
+                return localRequestAsync(url).then(function (resp) {
                     if (resp.statusCode == 404)
                         return privateGetTextAsync(url);
                     else
@@ -13802,7 +13796,10 @@ var pxsim;
                     if (!v)
                         return null;
                     if (v instanceof pxsim.RefObject)
-                        return { id: v.id };
+                        return {
+                            id: v.id,
+                            value: pxsim.RefObject.toAny(v)
+                        };
                     return { text: "(object)" };
                 default:
                     throw new Error();
@@ -14032,7 +14029,6 @@ var pxsim;
         StoppedState.prototype.getFrames = function () {
             var _this = this;
             return this._message.stackframes.map(function (s, i) {
-                ;
                 var bp = _this._map.getById(s.breakpointId);
                 if (bp) {
                     _this._frames[s.breakpointId] = s;

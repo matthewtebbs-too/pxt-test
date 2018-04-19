@@ -3903,7 +3903,8 @@ var pxt;
                 var handlerArgs = []; // = stdfun.handlerArgs.map(arg => escapeVarName(b.getFieldValue("HANDLER_" + arg.name), e));
                 for (var i = 0; i < stdfun.comp.handlerArgs.length; i++) {
                     var arg = stdfun.comp.handlerArgs[i];
-                    var varName = b.getFieldValue("HANDLER_" + arg.name);
+                    var varField = b.getField("HANDLER_" + arg.name);
+                    var varName = varField && varField.getText();
                     if (varName !== null) {
                         handlerArgs.push(escapeVarName(varName, e));
                     }
@@ -4130,7 +4131,8 @@ var pxt;
                     stdFunc.comp.handlerArgs.forEach(function (arg) {
                         if (foundIt_1)
                             return;
-                        var varName = b.getFieldValue("HANDLER_" + arg.name);
+                        var varField = b.getField("HANDLER_" + arg.name);
+                        var varName = varField && varField.getText();
                         if (varName != null && escapeVarName(varName, e) === name) {
                             foundIt_1 = true;
                         }
@@ -4175,7 +4177,8 @@ var pxt;
                     var stdFunc = e.stdCallTable[b.type];
                     if (stdFunc && stdFunc.comp.handlerArgs.length) {
                         stdFunc.comp.handlerArgs.forEach(function (arg) {
-                            var varName = b.getFieldValue("HANDLER_" + arg.name);
+                            var varField = b.getField("HANDLER_" + arg.name);
+                            var varName = varField && varField.getText();
                             if (varName != null) {
                                 trackLocalDeclaration(escapeVarName(varName, e), arg.type);
                             }
@@ -6793,7 +6796,7 @@ var pxt;
                         .appendField(controlsSimpleForDef.block["appendField"]);
                     var thisBlock = this;
                     setHelpResources(this, controlsSimpleForId, controlsSimpleForDef.name, function () {
-                        return pxt.U.rlf(controlsSimpleForDef.tooltip, thisBlock.getFieldValue('VAR'));
+                        return pxt.U.rlf(controlsSimpleForDef.tooltip, thisBlock.getField('VAR').getText());
                     }, controlsSimpleForDef.url, String(pxt.toolbox.getNamespaceColor('loops')));
                 },
                 /**
@@ -6802,7 +6805,7 @@ var pxt;
                  * @this Blockly.Block
                  */
                 getVars: function () {
-                    return [this.getFieldValue('VAR')];
+                    return [this.getField('VAR').getText()];
                 },
                 /**
                  * Notification that a variable is renaming.
@@ -6812,8 +6815,9 @@ var pxt;
                  * @this Blockly.Block
                  */
                 renameVar: function (oldName, newName) {
-                    if (Blockly.Names.equals(oldName, this.getFieldValue('VAR'))) {
-                        this.setFieldValue(newName, 'VAR');
+                    var varField = this.getField('VAR');
+                    if (Blockly.Names.equals(oldName, varField.getText())) {
+                        varField.setText(newName);
                     }
                 },
                 /**
@@ -6824,7 +6828,7 @@ var pxt;
                 customContextMenu: function (options) {
                     if (!this.isCollapsed()) {
                         var option = { enabled: true };
-                        var name_1 = this.getFieldValue('VAR');
+                        var name_1 = this.getField('VAR').getText();
                         option.text = lf("Create 'get {0}'", name_1);
                         var xmlField = goog.dom.createDom('field', null, name_1);
                         xmlField.setAttribute('name', 'VAR');
@@ -7263,7 +7267,7 @@ var pxt;
                         .appendField(controlsForOfDef.block["appendField"]);
                     var thisBlock = this;
                     setHelpResources(this, controlsForOfId, controlsForOfDef.name, function () {
-                        return pxt.U.rlf(controlsForOfDef.tooltip, thisBlock.getFieldValue('VAR'));
+                        return pxt.U.rlf(controlsForOfDef.tooltip, thisBlock.getField('VAR').getText());
                     }, controlsForOfDef.url, String(pxt.toolbox.getNamespaceColor('loops')));
                 }
             };
@@ -8107,6 +8111,31 @@ var pxt;
             }
             return str;
         }
+        /**
+         * Blockly variable fields can't be set directly; you either have to use the
+         * variable ID or set the value of the model and not the field
+         */
+        function setVarFieldValue(block, fieldName, newName) {
+            var varField = block.getField(fieldName);
+            // Check for an existing model with this name; otherwise we'll create
+            // a second variable with the same name and it will show up twice in the UI
+            var vars = block.workspace.getAllVariables();
+            var foundIt = false;
+            if (vars && vars.length) {
+                for (var v = 0; v < vars.length; v++) {
+                    var model = vars[v];
+                    if (model.name === newName) {
+                        varField.setValue(model.getId());
+                        foundIt = true;
+                    }
+                }
+            }
+            if (!foundIt) {
+                varField.initModel();
+                varField.getVariable().name = newName;
+            }
+        }
+        blocks_6.setVarFieldValue = setVarFieldValue;
         function shouldUseBlockInSearch(blockId, namespaceId, filters) {
             if (!filters) {
                 return true;
@@ -8308,7 +8337,8 @@ var pxt;
                     return undefined;
                 }
                 var declarationString = this.parameters.map(function (param) {
-                    var declaredName = _this.block.getFieldValue(param);
+                    var varField = _this.block.getField(param);
+                    var declaredName = varField && varField.getText();
                     var escapedParam = blocks.escapeVarName(param, e);
                     if (declaredName !== param) {
                         _this.parameterRenames[param] = declaredName;
@@ -8328,20 +8358,20 @@ var pxt;
                 var _this = this;
                 var result = {};
                 this.parameters.forEach(function (param) {
-                    result[_this.block.getFieldValue(param)] = _this.parameterTypes[param];
+                    result[_this.getVarFieldValue(param)] = _this.parameterTypes[param];
                 });
                 return result;
             };
             DestructuringMutator.prototype.isDeclaredByMutation = function (varName) {
                 var _this = this;
-                return this.parameters.some(function (param) { return _this.block.getFieldValue(param) === varName; });
+                return this.parameters.some(function (param) { return _this.getVarFieldValue(param) === varName; });
             };
             DestructuringMutator.prototype.mutationToDom = function () {
                 var _this = this;
                 // Save the parameters that are currently visible to the DOM along with their names
                 var mutation = document.createElement("mutation");
                 var attr = this.parameters.map(function (param) {
-                    var varName = _this.block.getFieldValue(param);
+                    var varName = _this.getVarFieldValue(param);
                     if (varName !== param) {
                         _this.parameterRenames[param] = pxt.Util.htmlEscape(varName);
                     }
@@ -8396,7 +8426,17 @@ var pxt;
                     });
                     this.updateVisibleProperties();
                     // Override any names that the user has changed
-                    properties_1.filter(function (p) { return !!p.newName; }).forEach(function (p) { return _this.block.setFieldValue(p.newName, p.property); });
+                    properties_1.filter(function (p) { return !!p.newName; }).forEach(function (p) { return _this.setVarFieldValue(p.property, p.newName); });
+                }
+            };
+            DestructuringMutator.prototype.getVarFieldValue = function (fieldName) {
+                var varField = this.block.getField(fieldName);
+                return varField && varField.getText();
+            };
+            DestructuringMutator.prototype.setVarFieldValue = function (fieldName, newValue) {
+                var varField = this.block.getField(fieldName);
+                if (this.block.getField(fieldName)) {
+                    blocks.setVarFieldValue(this.block, fieldName, newValue);
                 }
             };
             DestructuringMutator.prototype.updateBlock = function (subBlocks) {
@@ -8441,7 +8481,7 @@ var pxt;
                 }
                 this.currentlyVisible.forEach(function (param) {
                     if (_this.parameters.indexOf(param) === -1) {
-                        var name_5 = _this.block.getFieldValue(param);
+                        var name_5 = _this.getVarFieldValue(param);
                         // Persist renames
                         if (name_5 !== param) {
                             _this.parameterRenames[param] = name_5;
@@ -8928,7 +8968,8 @@ var pxt;
                 mutationToDom: function (el) {
                     el.setAttribute("numArgs", currentlyVisible.toString());
                     for (var j = 0; j < currentlyVisible; j++) {
-                        var varName = b.getFieldValue("HANDLER_" + handlerArgs[j].name);
+                        var varField = b.getField("HANDLER_" + handlerArgs[j].name);
+                        var varName = varField && varField.getText();
                         el.setAttribute("arg" + j, varName);
                     }
                     return el;
@@ -8939,7 +8980,10 @@ var pxt;
                     updateShape();
                     for (var j = 0; j < currentlyVisible; j++) {
                         var varName = saved.getAttribute("arg" + j);
-                        b.setFieldValue(varName, "HANDLER_" + handlerArgs[j].name);
+                        var fieldName = "HANDLER_" + handlerArgs[j].name;
+                        if (b.getField(fieldName)) {
+                            blocks.setVarFieldValue(b, fieldName, varName);
+                        }
                     }
                 }
             });

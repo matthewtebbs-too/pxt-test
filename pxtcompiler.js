@@ -12998,7 +12998,7 @@ var ts;
                     snippet: pxtc.service.getSnippet(decl, attributes_1)
                 };
                 if (stmt.kind === pxtc.SK.GetAccessor ||
-                    (stmt.kind === pxtc.SK.PropertyDeclaration && isReadonly(stmt))) {
+                    ((stmt.kind === pxtc.SK.PropertyDeclaration || stmt.kind === pxtc.SK.PropertySignature) && isReadonly(stmt))) {
                     r.isReadOnly = true;
                 }
                 return r;

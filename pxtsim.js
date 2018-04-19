@@ -1613,7 +1613,10 @@ var pxsim;
                     if (!v)
                         return null;
                     if (v instanceof pxsim.RefObject)
-                        return { id: v.id };
+                        return {
+                            id: v.id,
+                            value: pxsim.RefObject.toAny(v)
+                        };
                     return { text: "(object)" };
                 default:
                     throw new Error();
@@ -1843,7 +1846,6 @@ var pxsim;
         StoppedState.prototype.getFrames = function () {
             var _this = this;
             return this._message.stackframes.map(function (s, i) {
-                ;
                 var bp = _this._map.getById(s.breakpointId);
                 if (bp) {
                     _this._frames[s.breakpointId] = s;
